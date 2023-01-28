@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">WeightLogger</string>
+
+    <string name="screen_session_title">Sessions</string>
+    <string name="screen_exercise_title">Exercises</string>
+    <string name="screen_set_title">Sets</string>
+
+
+</resources>
