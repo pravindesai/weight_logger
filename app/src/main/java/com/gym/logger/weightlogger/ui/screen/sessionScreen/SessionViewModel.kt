@@ -20,10 +20,8 @@ class SessionViewModel @Inject constructor(
     private val sessionRepository: SessionRepository
 ):ViewModel() {
     private val TAG = "***SessionViewModel"
-    private val _sessions = MutableStateFlow(NetworkState.Empty)
+    private val _sessions:MutableStateFlow<NetworkState<Session>> = MutableStateFlow(NetworkState.Empty())
     val sessions = _sessions.asStateFlow()
-
-    val newSessions = MutableStateFlow(Session())
 
     init {
             viewModelScope.launch {
@@ -33,17 +31,16 @@ class SessionViewModel @Inject constructor(
 
                     when(it){
                         is NetworkState.Empty->{
-                            Log.e(TAG, "EMPTY" )
+                            _sessions.value = NetworkState.Empty()
                         }
                         is NetworkState.Loading->{
-                            Log.e(TAG, "LOADING" )
+                            _sessions.value = NetworkState.Loading()
                         }
                         is NetworkState.Failure->{
-                            Log.e(TAG, "FAiled: ${it.message}" )
-
+                            _sessions.value = NetworkState.Failure(message = it.message)
                         }
                         is NetworkState.Success->{
-                            Log.e(TAG, "SUCESS ${it.data}" )
+                            _sessions.value = NetworkState.Success(data = it.data)
                         }
                     }
 
@@ -51,15 +48,18 @@ class SessionViewModel @Inject constructor(
             }
     }
 
-    fun addSession(){
+    fun addSession(newSession: Session) {
         viewModelScope.launch {
             sessionRepository.addSession(
-                Session(
-                    sessionId = 0,
-                    sessionName = "AAA",
-                    dateCreated = Calendar.getInstance().time
-                )
+                newSession
+            )
+        }
+    }
 
+    fun deleteSession(session: Session) {
+        viewModelScope.launch {
+            sessionRepository.deleteSession(
+                session
             )
         }
     }

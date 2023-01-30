@@ -1,9 +1,6 @@
 package com.gym.logger.weightlogger.data.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import com.gym.logger.weightlogger.data.entity.Exercise
 import com.gym.logger.weightlogger.data.entity.Session
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +15,7 @@ interface SessionDao {
     @Query("SELECT * FROM Session")
     fun getAllSession(): Flow<List<Session>>
 
-    @Insert
+    @Upsert
     suspend fun insertAll(vararg session: Session)
 
     @Delete

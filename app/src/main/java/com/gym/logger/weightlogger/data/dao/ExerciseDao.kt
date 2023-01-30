@@ -17,6 +17,10 @@ interface ExerciseDao{
     @Query("SELECT * FROM Exercise")
     fun getAllExercises():Flow<List<Exercise>>
 
+
+    @Query("SELECT * FROM Exercise WHERE sessionId == :sessionId")
+    fun getAllExercisesForId(sessionId:Int):Flow<List<Exercise>>
+
     @Insert
     suspend fun insertAll(vararg exercise: Exercise)
 
