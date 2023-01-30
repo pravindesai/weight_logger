@@ -12,7 +12,7 @@ import com.gym.logger.weightlogger.data.entity.Session
 import com.gym.logger.weightlogger.data.entity.Set
 import java.util.Date
 
-@Database(entities = [Session::class,Exercise::class,Set::class], version = 2, exportSchema = false)
+@Database(entities = [Session::class,Exercise::class,Set::class], version = 3, exportSchema = false)
 @TypeConverters(AppTypeConverters::class)
 abstract class AppDB:RoomDatabase() {
     abstract fun exerciseDao():ExerciseDao

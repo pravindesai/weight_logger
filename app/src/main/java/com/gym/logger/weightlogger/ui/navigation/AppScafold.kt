@@ -25,13 +25,13 @@ fun AppScaffold(modifier: Modifier = Modifier) {
     Scaffold(
         modifier = modifier,
         topBar = {
-            /*AppBar(
+            AppBar(
                 canNavigateBack = canNavigateBack,
                 navigateUp = {
                     navController.navigateUp()
                 },
                 titleId = currentScreen.title
-            )*/
+            )
         }
     ) { paddingValues ->
         Box(

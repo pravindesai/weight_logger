@@ -1,5 +1,6 @@
 package com.gym.logger.weightlogger.repository
 
+import android.util.Log
 import com.gym.logger.weightlogger.app.NetworkState
 import com.gym.logger.weightlogger.data.dao.SessionDao
 import com.gym.logger.weightlogger.data.entity.Session
@@ -15,35 +16,34 @@ class SessionRepository @Inject constructor(
     private val sessionDao: SessionDao
 ) {
 
-    suspend fun getAllSessions(): Flow<NetworkState<out Any>> = flow {
+    suspend fun getAllSessions():Flow<NetworkState<Session>> = flow <NetworkState<Session>>{
             emit(NetworkState.Loading())
             try {
 
                 val allSessions = sessionDao.getAllSession()
                 allSessions.collect{
                     emit(
-                        NetworkState.Success(data = it)
+                        NetworkState.Success<Session>(data = it)
                     )
                 }
 
             } catch (e: Exception) {
                 emit(
-                    NetworkState.Failure(message = e.message)
+                    NetworkState.Failure<Session>(message = e.message)
                 )
             }
 
         }.flowOn(Dispatchers.IO)
 
-
     suspend fun addSession(session: Session){
 
         sessionDao.insertAll(session)
+
     }
 
     suspend fun deleteSession(session: Session){
         sessionDao.delete(session)
     }
-
 
     suspend fun findSessionById(sessionId:Int): Flow<NetworkState<out Any>> = flow {
         emit(NetworkState.Loading())
@@ -52,7 +52,7 @@ class SessionRepository @Inject constructor(
             val allSessions = sessionDao.findSessionById(sessionId)
             allSessions.collect {
                 emit(
-                    NetworkState.Success(data = it)
+                    NetworkState.Success(data = listOf(it))
                 )
             }
 

@@ -1,11 +1,6 @@
 package com.gym.logger.weightlogger.ui.navigation
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,7 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.gym.logger.weightlogger.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,40 +27,38 @@ fun AppBar(
 ) {
     val appBarModifier = Modifier
         .fillMaxWidth()
-        .wrapContentHeight(
-            align = Alignment.CenterVertically
-        )
+        .wrapContentHeight()
 
-//    TopAppBar(
-//        title = { Text(stringResource(titleId), modifier = Modifier.wrapContentHeight()) },
-//        modifier = appBarModifier,
-//        navigationIcon = {
-//            if (canNavigateBack) {
-//                IconButton(onClick = navigateUp) {
-//                    Icon(
-//                        imageVector = Icons.Filled.ArrowBack,
-//                        contentDescription = ""
-//                    )
-//                }
-//            }
-//        }
-//    )
-
-    Row(modifier = appBarModifier) {
-        if (canNavigateBack) {
-            IconButton(onClick = navigateUp) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = ""
-                )
+    TopAppBar(
+        title = {
+            Text(
+                stringResource(titleId),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(align = Alignment.CenterVertically),
+                textAlign = TextAlign.Start,
+            )
+        },
+        modifier = appBarModifier,
+        navigationIcon = {
+            if (canNavigateBack) {
+                IconButton(onClick = navigateUp) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = ""
+                    )
+                }
             }
         }
-        Text(
-            stringResource(titleId),
-            modifier = Modifier
-                .wrapContentHeight()
-                .size(16.dp)
-                .wrapContentHeight(align = Alignment.CenterVertically)
-        )
-    }
+    )
+}
+
+@Preview
+@Composable
+fun AppBarPreview() {
+    AppBar(
+        navigateUp = {},
+        canNavigateBack = true,
+        titleId = R.string.screen_exercise_title
+    )
 }
