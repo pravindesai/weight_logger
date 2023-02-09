@@ -16,5 +16,6 @@ data class Set(
     val timeInMiles:Long,
     val exerciseId:Int,
     val weight:Float,
-    val reps:Int
+    val reps:Int,
+    var isEditing:Boolean
     ) : Parcelable
