@@ -3,11 +3,12 @@ package com.gym.logger.weightlogger.ui.composable
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,12 +19,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -41,7 +44,14 @@ fun SetCard(
     set: Set,
     onSetClicked: (set: Set) -> Unit = {},
     onLongClickedClicked: (set: Set) -> Unit = {},
-    onSaveButtonClicked: (set: Set) -> Unit = {}
+    onSaveButtonClicked: (set: Set) -> Unit = {},
+    onAddSetClick: () -> Unit = {},
+    onMinusSetClick: () -> Unit = {},
+    onSetTextChange: (value: Float?) -> Unit = {},
+    onAddWeightClick: () -> Unit = {},
+    onMinusWeightClick: () -> Unit = {},
+    onWeightTextChange: (value: Float?) -> Unit = {}
+
 ) {
 
     val cardColors = CardDefaults.cardColors(
@@ -55,10 +65,9 @@ fun SetCard(
                 .fillMaxWidth()
                 .combinedClickable(onClick = {
                     onSetClicked(set)
-                },
-                    onLongClick = {
-                        onLongClickedClicked(set)
-                    }),
+                }, onLongClick = {
+                    onLongClickedClicked(set)
+                }),
             shape = RoundedCornerShape(10.dp),
             border = BorderStroke(1.5.dp, Color.Gray),
             colors = cardColors,
@@ -95,15 +104,25 @@ fun SetCard(
                             color = Color.Gray
                         )
 
-                        Text(
-                            text = set.weight.toString(),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(3.dp),
-                            fontSize = 25.sp,
-                            textAlign = TextAlign.Center,
-                            color = Color.Black
-                        )
+
+                        if (set.isEditing) {
+                            Stepper(value = set.weight,
+                            onPlusClick = onAddWeightClick,
+                            onMinusClick = onMinusWeightClick,
+                            onTextChange = onWeightTextChange)
+                        } else {
+
+                            Text(
+                                text = set.weight.toString(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(3.dp),
+                                fontSize = 25.sp,
+                                textAlign = TextAlign.Center,
+                                color = Color.Black
+                            )
+                        }
+
 
                     }
 
@@ -125,15 +144,24 @@ fun SetCard(
                             color = Color.Gray
                         )
 
-                        Text(
-                            text = set.reps.toString(),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(3.dp),
-                            fontSize = 25.sp,
-                            textAlign = TextAlign.Center,
-                            color = Color.Black
-                        )
+                        if (set.isEditing) {
+                            Stepper(value = set.reps.toFloat(),
+                                onPlusClick = onAddSetClick,
+                                onMinusClick = onMinusSetClick,
+                                onTextChange = onSetTextChange)
+                        } else {
+                            Text(
+                                text = set.reps.toString(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(3.dp),
+                                fontSize = 25.sp,
+                                textAlign = TextAlign.Center,
+                                color = Color.Black
+                            )
+                        }
+
+
                     }
 
                     Column(
@@ -143,8 +171,7 @@ fun SetCard(
                             .wrapContentWidth()
 
                     ) {
-                        Image(
-                            painterResource(if (set.isEditing) R.drawable.check else R.drawable.edit),
+                        Image(painterResource(if (set.isEditing) R.drawable.check else R.drawable.edit),
                             contentDescription = "",
                             contentScale = ContentScale.Fit,
                             modifier = Modifier
@@ -152,8 +179,7 @@ fun SetCard(
                                 .width(40.dp)
                                 .clickable {
                                     onSaveButtonClicked(set)
-                                }
-                        )
+                                })
                     }
                 }
 
@@ -191,10 +217,107 @@ fun SetCardPreview() {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Stepper(value: Float, onPlusClick: () -> Unit = {}, onMinusClick: () -> Unit = {}) {
+fun Stepper(
+    value: Float,
+    onPlusClick: () -> Unit = {},
+    onMinusClick: () -> Unit = {},
+    onTextChange: (value: Float?) -> Unit = {}
+) {
+
+    val colors = TextFieldDefaults.textFieldColors(
+        focusedIndicatorColor = Color.Transparent,
+        disabledIndicatorColor = Color.Transparent,
+        unfocusedIndicatorColor = Color.Transparent,
+        containerColor = Color.Transparent
+    )
 
 
+    val cardColors = CardDefaults.cardColors(
+        containerColor = Color.Transparent,
+    )
+
+    Column(modifier = Modifier.wrapContentHeight()) {
+        Card(
+            modifier = Modifier
+                .padding(2.dp)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp),
+            border = BorderStroke(0.5.dp, Color.Gray),
+            colors = cardColors,
+        ) {
+
+            Row(
+                modifier = Modifier
+                    .padding(5.dp)
+                    .fillMaxWidth()
+                    .height(50.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+
+                    Image(painterResource(R.drawable.negative),
+                        contentDescription = "",
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .height(30.dp)
+                            .width(30.dp)
+                            .clickable { onMinusClick() })
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .weight(3f),
+                    verticalArrangement = Arrangement.Center
+                ) {
+
+                    TextField(
+                        value = value.toString(),
+                        onValueChange = {
+                            onTextChange(it.toFloatOrNull())
+                        },
+                        placeholder = { Text("") },
+                        singleLine = true,
+                        colors = colors,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+
+                ) {
+
+                    Image(painterResource(R.drawable.add),
+                        contentDescription = "",
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .height(30.dp)
+                            .width(30.dp)
+                            .clickable { onPlusClick() })
+                }
+            }
+        }
+    }
 
 
 }
